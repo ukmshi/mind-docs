@@ -26,6 +26,33 @@
  * ```
  */
 
+import React, { useEffect, useState } from 'react';
 import './index.css';
+import { createRoot } from 'react-dom/client';
 
-console.log('👋 This message is being logged by "renderer.js", included via webpack');
+console.log('👋 This message is being logged by "renderer.tsx", included via webpack');
+
+const App: React.FC = () => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    console.log('Component did mount');
+    return () => {
+      console.log('Component will unmount');
+    };
+  }, []);
+
+  return (
+    <div>
+      <h1>Counter: {count}</h1>
+      <button onClick={() => setCount(count + 1)}>Increase</button>
+      <button onClick={() => setCount(count - 1)}>Decrease</button>
+    </div>
+  );
+};
+
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(<App />);
+
+// ReactDOM.render(<App />, document.getElementById('root'));
