@@ -1,21 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import MindElixir, { MindElixirInstance } from "mind-elixir";
 
 const App: React.FC = () => {
-  const [count, setCount] = useState(0);
+  const me = useRef<MindElixirInstance | null>(null);
 
   useEffect(() => {
-    console.log('Component did mount');
+    const instance = new MindElixir({
+      el: "#map",
+      direction: MindElixir.LEFT,
+      draggable: true, // default true
+      contextMenu: true, // default true
+      toolBar: true, // default true
+      nodeMenu: true, // default true
+      keypress: true // default true
+    });
+    instance.init(MindElixir.new("new topic"));
+    me.current = instance;
+
     return () => {
-      console.log('Component will unmount');
+      me.current = null; // Clean up the reference on component unmount
     };
+
   }, []);
 
-  return (
-    <div>
-      <h1>Counter: {count}</h1>
-      <button onClick={() => setCount(count + 1)}>Increase</button>
-      <button onClick={() => setCount(count - 1)}>Decrease</button>
-    </div>
+  return(
+    <div id="map" style={{ height: "500px", width: "100%" }} />
   );
 };
 
