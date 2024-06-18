@@ -27,10 +27,7 @@
  */
 
 import App from './app';
-import './index.css';
 import { createRoot } from 'react-dom/client';
-
-console.log('👋 This message is being logged by "main.tsx", included via webpack');
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
