@@ -46,6 +46,9 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@blocknote/core": "^0.14.1",
+    "@blocknote/mantine": "^0.14.1",
+    "@blocknote/react": "^0.14.1",
     "electron-squirrel-startup": "^1.0.1",
     "mind-elixir": "^4.0.5",
     "react": "^18.3.1",
