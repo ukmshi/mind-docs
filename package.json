@@ -50,6 +50,8 @@
     "mind-elixir": "^4.0.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-error-boundary": "^4.0.13",
+    "react-router-dom": "^6.23.1",
     "reactflow": "^11.11.3"
   }
 }
