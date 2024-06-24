@@ -74,7 +74,23 @@
               },
               {
                 "topic": "new node",
-                "id": "049fa8e34c443ac1"
+                "id": "049fa8e34c443ac1",
+                "children": [
+                  {
+                    "topic": "new node",
+                    "id": "04ab223d5f797592",
+                    "children": [
+                      {
+                        "topic": "new node",
+                        "id": "04ab2297d2eaf7d7"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "topic": "new node",
+                "id": "04ab21d09614795b"
               }
             ]
           }

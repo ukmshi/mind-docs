@@ -1,68 +1,18 @@
-import MindElixir, { MindElixirInstance, NodeObj, MindElixirData } from "mind-elixir";
-import { useEffect, useRef, useState } from "react";
-
-const MINDMAP_FILE_PATH = '/Users/ukmashi/mind-docs/mindmap.json';
+import MindElixir, { MindElixirInstance, MindElixirData } from "mind-elixir";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 export const MindMap: React.FC = () => {
   const me = useRef<MindElixirInstance | null>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [currentFilePath, setCurrentFilePath] = useState<string | null>(null);
+  const [currentData, setCurrentData] = useState<MindElixirData | null>(null);
 
-  useEffect(() => {
-    const initializeMindMap = async () => {
-      try {
-        const savedData = await loadMindMap();
-        const instance = new MindElixir({
-          el: "#map",
-          direction: MindElixir.RIGHT,
-          draggable: true,
-          contextMenu: true,
-          toolBar: true,
-          nodeMenu: true,
-          keypress: true
-        });
-
-        if (savedData) {
-          instance.init(savedData);
-        } else {
-          instance.init(MindElixir.new("new topic"));
-        }
-
-        instance.bus.addListener('operation', (operation) => {
-          const data = instance.getData();
-          saveMindMap(data);
-        });
-
-        me.current = instance;
-      } catch (error) {
-        console.error('Error initializing mind map:', error);
-        setError('Failed to initialize mind map: ' + (error instanceof Error ? error.message : String(error)));
-      }
-    };
-
-    initializeMindMap();
-
-    return () => {
-      me.current = null;
-    };
-  }, []);
-
-  const loadMindMap = async (): Promise<MindElixirData | null> => {
-    try {
-      const content = await window.FileIO.read(MINDMAP_FILE_PATH);
-      return JSON.parse(content) as MindElixirData;
-    } catch (error) {
-      console.error('Error loading mind map:', error);
-      // If file doesn't exist or is invalid, return null to create a new mind map
-      return null;
-    }
-  };
-
-  const saveMindMap = async (data: MindElixirData) => {
+  const saveMindMap = useCallback(async (data: MindElixirData, filePath: string) => {
     setSaveStatus('saving');
     try {
       const content = JSON.stringify(data, null, 2);
-      await window.FileIO.write(MINDMAP_FILE_PATH, content);
+      await window.FileIO.write(filePath, content);
       console.log('Mind map saved successfully');
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 2000);
@@ -70,6 +20,76 @@ export const MindMap: React.FC = () => {
       console.error('Error saving mind map:', error);
       setError('Failed to save mind map: ' + (error instanceof Error ? error.message : String(error)));
       setSaveStatus('error');
+    }
+  }, []);
+
+  const operationListener = useCallback(() => {
+    if (currentFilePath && me.current) {
+      saveMindMap(me.current.getData(), currentFilePath);
+    }
+  }, [currentFilePath, saveMindMap]);
+
+  const initializeMindMap = useCallback((data?: MindElixirData) => {
+    if (me.current) {
+      me.current.bus.removeListener('operation', operationListener);
+    }
+
+    const instance = new MindElixir({
+      el: "#map",
+      direction: MindElixir.RIGHT,
+      draggable: true,
+      contextMenu: true,
+      toolBar: true,
+      nodeMenu: true,
+      keypress: true
+    });
+
+    if (data) {
+      instance.init(data);
+    } else {
+      instance.init(MindElixir.new("new topic"));
+    }
+
+    instance.bus.addListener('operation', operationListener);
+    me.current = instance;
+  }, [operationListener]);
+
+  useEffect(() => {
+    if (currentData) {
+      initializeMindMap(currentData);
+    } else {
+      initializeMindMap();
+    }
+  }, [currentData, initializeMindMap]);
+
+  const loadMindMap = async (filePath: string): Promise<MindElixirData | null> => {
+    try {
+      const content = await window.FileIO.read(filePath);
+      return JSON.parse(content) as MindElixirData;
+    } catch (error) {
+      console.error('Error loading mind map:', error);
+      setError('Failed to load mind map: ' + (error instanceof Error ? error.message : String(error)));
+      return null;
+    }
+  };
+
+  const handleFileSelect = async () => {
+    try {
+      const filePath = await window.FileIO.select({
+        properties: ['openFile'],
+        filters: [{ name: 'JSON', extensions: ['json'] }]
+      });
+      
+      if (filePath) {
+        const data = await loadMindMap(filePath);
+        if (data) {
+          setCurrentFilePath(filePath);
+          setCurrentData(data);
+        }
+      }
+    } catch (error) {
+      console.error('Error selecting file:', error);
+      setError('Failed to select file: ' + (error instanceof Error ? error.message : String(error)));
     }
   };
 
@@ -88,6 +108,10 @@ export const MindMap: React.FC = () => {
 
   return (
     <div>
+      <div>
+        <button onClick={handleFileSelect}>Select Mind Map File</button>
+        {currentFilePath && <span>Current file: {currentFilePath}</span>}
+      </div>
       <div id="map" style={{ transition: "flex 0.3s", height: "80vh", overflow: "hidden" }} />
       <div style={{ position: 'fixed', bottom: 10, right: 10, padding: '5px 10px', backgroundColor: saveStatus === 'error' ? 'red' : 'green', color: 'white', borderRadius: '5px' }}>
         {getSaveStatusMessage()}
