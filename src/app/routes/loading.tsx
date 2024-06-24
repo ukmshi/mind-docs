@@ -4,17 +4,23 @@ import { useEffect, useState } from "react";
 
 export const LandingRoute = () => {
   const [fileContent, setFileContent] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const content = window.FileIO.readFile('/Users/ukmashi/mind-docs/README.md');
-      setFileContent(content);
-      console.log(content);
-    } catch (error) {
-      console.error('Error reading file:', error);
-      setFileContent('Error reading file');
-    }
+    const readFile = async () => {
+      try {
+        const content = await window.FileIO.read('/Users/ukmashi/mind-docs/README.md');
+        setFileContent(content);
+        console.log(content);
+      } catch (error) {
+        console.error('Error reading file:', error);
+        setError('Error reading file: ' + (error instanceof Error ? error.message : String(error)));
+      }
+    };
+
+    readFile();
   }, []);
+
 
   return (
     <>

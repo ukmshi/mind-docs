@@ -2,7 +2,8 @@ export declare global {
   interface Window {
     FileIO: {
       counter: (count: number) => number;
-      readFile: (filePath: string) => string;    
+      read: (filePath: string) => string;
+      write: (filePath: string, content: string) => void;
     };
   }
 }

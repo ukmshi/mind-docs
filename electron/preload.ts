@@ -3,5 +3,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("FileIO", {
-  readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
+  read: (filePath) => ipcRenderer.invoke('read', filePath),
+  write: (filePath: string, content: string) => ipcRenderer.invoke('write', filePath, content),
 });
