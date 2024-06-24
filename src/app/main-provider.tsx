@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
-// import "@blocknote/mantine/style.css";
-// import "@blocknote/core/fonts/inter.css";
 import { MainErrorFallback } from '@/components/errors/main';
+import "@blocknote/core/fonts/inter.css";
+import "@blocknote/mantine/style.css";
 
 type AppProviderProps = {
   children: React.ReactNode;

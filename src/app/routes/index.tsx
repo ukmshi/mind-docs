@@ -1,10 +1,8 @@
 import { MainErrorFallback } from '@/components/errors/main';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, createHashRouter } from 'react-router-dom';
 
 export const createRouter = () =>{
-  console.log('render main provider');
-
-  return createBrowserRouter([
+  return createHashRouter([
     {
       path: '/',
       lazy: async () => {
