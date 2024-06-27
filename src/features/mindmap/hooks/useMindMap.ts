@@ -32,15 +32,24 @@ export const useMindMap = () => {
     }
   }, []);
 
+  // 操作があった場合に状態を保存する
   const operationListener = useCallback(() => {
     if (state.currentFilePath && me.current) {
       handleSaveMindMap(me.current.getData(), state.currentFilePath);
     }
   }, [state.currentFilePath, handleSaveMindMap]);
 
+  const handleDoubleClick = useCallback(() => {
+    console.log('ダブルクリックがあった');
+  }, []);
+
+  // インスタンスを生成
   const initializeMindMap = useCallback((data?: MindElixirData) => {
     if (me.current) {
+      console.log('remove event listener');
+      
       me.current.bus.removeListener('operation', operationListener);
+      me.current.mindElixirBox.removeEventListener('dblclick', handleDoubleClick);
     }
 
     const instance = new MindElixir({
@@ -59,10 +68,13 @@ export const useMindMap = () => {
       instance.init(MindElixir.new("new topic"));
     }
 
+    console.log('add event listener');
     instance.bus.addListener('operation', operationListener);
+    instance.mindElixirBox.addEventListener('dblclick', handleDoubleClick);
     me.current = instance;
   }, [operationListener]);
 
+  // ファイルを選択して読み込む
   const handleFileSelect = async () => {
     try {
       const filePath = await window.FileIO.select({
@@ -82,7 +94,6 @@ export const useMindMap = () => {
 
   return {
     state,
-    me,
     initializeMindMap,
     handleFileSelect,
   };

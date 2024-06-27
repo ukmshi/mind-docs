@@ -3,7 +3,7 @@ import { useMindMap } from "../hooks/useMindMap";
 import { getSaveStatusMessage } from "../utils/mindMapUtils";
 
 export const MindMap: React.FC = () => {
-  const { state, me, initializeMindMap, handleFileSelect } = useMindMap();
+  const { state, initializeMindMap, handleFileSelect } = useMindMap();
 
   useEffect(() => {
     if (state.currentData) {
