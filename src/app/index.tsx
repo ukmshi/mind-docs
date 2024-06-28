@@ -1,29 +1,21 @@
-import { MindMap } from "@/features/mindmap/components/maindamp";
-import { useState } from "react";
+import { useMemo } from 'react';
+import { RouterProvider } from 'react-router-dom';
+import { createRouter } from './routes';
+import { AppProvider } from './main-provider';
 
-const App: React.FC = () => {
-  const [fileName, setFileName] = useState('');
-  const ipcRenderer = (window as any).preload.ipcRenderer;
+const AppRouter = () => {
 
-  const handleOpneFile = () => {
-    console.log('ssssssssss');
-  }
+  const router = useMemo(() => createRouter(), []);
 
-  return(
-    <>
-      <h1>Hello world</h1>
-      <button onClick={handleOpneFile}>Open File</button>
-      <a
-        className="App-link"
-        onClick={() => ipcRenderer.send("openExternal", "https://reactjs.org")}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Learn React
-      </a>
-      {/* <MindMap /> */}
-    </>
-  );
+  return <RouterProvider router={router} />;
 };
+
+function App() {
+  return (
+    <AppProvider>
+      <AppRouter />
+    </AppProvider>
+  );
+}
 
 export default App;

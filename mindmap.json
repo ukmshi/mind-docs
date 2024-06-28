@@ -1,0 +1,128 @@
+{
+  "nodeData": {
+    "id": "049f7dd5b2e27e03",
+    "topic": "new topic",
+    "root": true,
+    "children": [
+      {
+        "topic": "new node",
+        "id": "049f7eeb522c6bcc",
+        "children": [
+          {
+            "topic": "new node",
+            "id": "049f7f1ddf93ac3e"
+          }
+        ]
+      },
+      {
+        "topic": "new node",
+        "id": "049f7f7ad32228bd",
+        "children": [
+          {
+            "topic": "new node",
+            "id": "049f7fa6190f152b",
+            "children": [
+              {
+                "topic": "new node",
+                "id": "049f7fbd9b2984e2"
+              }
+            ]
+          },
+          {
+            "topic": "new node",
+            "id": "049f7ffaa68451e9",
+            "children": [
+              {
+                "topic": "new node",
+                "id": "049f8023052a7fb1",
+                "children": [
+                  {
+                    "topic": "new node",
+                    "id": "049f804e231912a1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "topic": "new node",
+            "id": "049f808bfb98bf5b",
+            "children": [
+              {
+                "topic": "new node",
+                "id": "049f80bd1ecb3c2c"
+              },
+              {
+                "topic": "ヤァ！",
+                "id": "049f80fe3c3b6df2",
+                "children": [
+                  {
+                    "topic": "こんにちわ",
+                    "id": "049f81476edc9df8",
+                    "children": [
+                      {
+                        "topic": "new node",
+                        "id": "049f815f21d7d106"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "topic": "new node",
+                "id": "049fa8ab0e23df81"
+              },
+              {
+                "topic": "new node",
+                "id": "049fa8e34c443ac1",
+                "children": [
+                  {
+                    "topic": "new node",
+                    "id": "04ab223d5f797592",
+                    "children": [
+                      {
+                        "topic": "new node",
+                        "id": "04ab2297d2eaf7d7"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "topic": "new node",
+                "id": "04ab21d09614795b"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "arrows": [],
+  "summaries": [],
+  "direction": 1,
+  "theme": {
+    "name": "Latte",
+    "palette": [
+      "#dd7878",
+      "#ea76cb",
+      "#8839ef",
+      "#e64553",
+      "#fe640b",
+      "#df8e1d",
+      "#40a02b",
+      "#209fb5",
+      "#1e66f5",
+      "#7287fd"
+    ],
+    "cssVar": {
+      "--main-color": "#444446",
+      "--main-bgcolor": "#ffffff",
+      "--color": "#777777",
+      "--bgcolor": "#f6f6f6",
+      "--panel-color": "#444446",
+      "--panel-bgcolor": "#ffffff",
+      "--panel-border-color": "#eaeaea"
+    }
+  }
+}
