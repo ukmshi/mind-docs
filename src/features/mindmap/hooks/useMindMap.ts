@@ -1,46 +1,45 @@
-import { useState, useCallback, useRef } from 'react';
-import MindElixir, { MindElixirInstance, MindElixirData } from "mind-elixir";
-import { MindMapState, SaveStatus } from '../types/MindMapTypes';
-import { saveMindMap, loadMindMap } from '../utils/mindMapUtils';
+import { useCallback, useRef } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import MindElixir, { MindElixirData, MindElixirInstance, NodeObj } from "mind-elixir";
+import { mindMapDataState, currentFilePathState, saveStatusState, errorState } from '../stores/mindMapState';
+import { saveMindMap, loadMindMap, saveStateToJSON, selectJSONFile, saveStateToJSONFile, deepClone } from '../utils/mindMapUtils';
 
 export const useMindMap = () => {
-  const [state, setState] = useState<MindMapState>({
-    saveStatus: 'idle',
-    error: null,
-    currentFilePath: null,
-    currentData: null,
-  });
+  const [mindMapData, setMindMapData] = useRecoilState(mindMapDataState);
+  const [currentFilePath, setCurrentFilePath] = useRecoilState(currentFilePathState);
+  const setSaveStatus = useSetRecoilState(saveStatusState);
+  const setError = useSetRecoilState(errorState);
   const me = useRef<MindElixirInstance | null>(null);
 
-  const updateState = (newState: Partial<MindMapState>) => {
-    setState(prevState => ({ ...prevState, ...newState }));
-  };
-
-  const handleSaveMindMap = useCallback(async (data: MindElixirData, filePath: string) => {
-    updateState({ saveStatus: 'saving' });
+  const handleSaveMindMap = useCallback(async (data: NodeObj, filePath: string) => {
+    setSaveStatus('saving');
     try {
       await saveMindMap(data, filePath);
       console.log('Mind map saved successfully');
-      updateState({ saveStatus: 'saved' });
-      setTimeout(() => updateState({ saveStatus: 'idle' }), 2000);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2000);
     } catch (error) {
       console.error('Error saving mind map:', error);
-      updateState({
-        error: 'Failed to save mind map: ' + (error instanceof Error ? error.message : String(error)),
-        saveStatus: 'error'
-      });
+      setError('Failed to save mind map: ' + (error instanceof Error ? error.message : String(error)));
+      setSaveStatus('error');
     }
-  }, []);
+  }, [setSaveStatus, setError]);
 
   const operationListener = useCallback(() => {
-    if (state.currentFilePath && me.current) {
-      handleSaveMindMap(me.current.getData(), state.currentFilePath);
+    if (currentFilePath && me.current) {
+      const data: NodeObj = me.current.getData().nodeData;
+      handleSaveMindMap(data, currentFilePath);
     }
-  }, [state.currentFilePath, handleSaveMindMap]);
+  }, [currentFilePath, handleSaveMindMap]);
 
-  const initializeMindMap = useCallback((data?: MindElixirData) => {
+  const handleDoubleClick = useCallback(() => {
+    console.log('ダブルクリックがあった');
+  }, []);
+
+  const initializeMindMap = useCallback((data?: NodeObj) => {
     if (me.current) {
       me.current.bus.removeListener('operation', operationListener);
+      me.current.mindElixirBox.removeEventListener('dblclick', handleDoubleClick);
     }
 
     const instance = new MindElixir({
@@ -54,14 +53,18 @@ export const useMindMap = () => {
     });
 
     if (data) {
-      instance.init(data);
+      const clonedData = deepClone(data);
+      const mindElixirData: MindElixirData = { nodeData: clonedData };
+      instance.init(mindElixirData);
     } else {
       instance.init(MindElixir.new("new topic"));
     }
 
     instance.bus.addListener('operation', operationListener);
+    instance.mindElixirBox.addEventListener('dblclick', handleDoubleClick);
     me.current = instance;
   }, [operationListener]);
+
 
   const handleFileSelect = async () => {
     try {
@@ -72,18 +75,51 @@ export const useMindMap = () => {
       
       if (filePath) {
         const data = await loadMindMap(filePath);
-        updateState({ currentFilePath: filePath, currentData: data });
+        const mindElixirData: MindElixirData = { nodeData: data };
+        setMindMapData(mindElixirData);
+        setCurrentFilePath(filePath);
+        initializeMindMap(data);
       }
     } catch (error) {
       console.error('Error selecting file:', error);
-      updateState({ error: 'Failed to select file: ' + (error instanceof Error ? error.message : String(error)) });
+      setError('Failed to select file: ' + (error instanceof Error ? error.message : String(error)));
     }
   };
 
+  const handleSaveStateToJSONFile = async () => {
+    if (!me.current) return;
+
+    const data: NodeObj = me.current.getData().nodeData;
+    
+    try {
+      await saveStateToJSONFile(data);
+    } catch (error) {
+      console.error('Error saving state to JSON:', error);
+      setError('Failed to save state to JSON: ' + (error instanceof Error ? error.message : String(error)));
+    }
+  };
+
+
+  const loadStateFromJSONFile = async () => {
+    try {
+      const filePath = await selectJSONFile();
+      
+      if (filePath) {
+        const data = await loadMindMap(filePath);
+        const mindElixirData: MindElixirData = { nodeData: data };
+        setMindMapData(mindElixirData);
+        setCurrentFilePath(filePath);
+        initializeMindMap(data);
+      }
+    } catch (error) {
+      console.error('Error loading state from JSON:', error);
+      setError('Failed to load state from JSON: ' + (error instanceof Error ? error.message : String(error)));
+    }
+  };
   return {
-    state,
-    me,
     initializeMindMap,
     handleFileSelect,
+    handleSaveStateToJSONFile,
+    loadStateFromJSONFile,
   };
 };

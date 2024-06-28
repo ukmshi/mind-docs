@@ -3,6 +3,7 @@ import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { MainErrorFallback } from '@/components/errors/main';
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
+import { RecoilRoot } from 'recoil';
 
 type AppProviderProps = {
   children: React.ReactNode;
@@ -15,18 +16,20 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   };  
 
   return (
-    <React.Suspense
-      fallback={
-        <div className="flex h-screen w-screen items-center justify-center">
-          読み込み中
-          {/* <Spinner size="xl" /> */}
-        </div>
-      }
-    >
-      <ErrorBoundary FallbackComponent={MainErrorFallback} onError={handleError}>
-        {/* <Notifications /> */}
-        {children}
-      </ErrorBoundary>
-    </React.Suspense>
+    <RecoilRoot>
+      <React.Suspense
+        fallback={
+          <div className="flex h-screen w-screen items-center justify-center">
+            読み込み中
+            {/* <Spinner size="xl" /> */}
+          </div>
+        }
+      >
+        <ErrorBoundary FallbackComponent={MainErrorFallback} onError={handleError}>
+          {/* <Notifications /> */}
+          {children}
+        </ErrorBoundary>
+      </React.Suspense>
+    </RecoilRoot>
   );
 };
