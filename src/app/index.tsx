@@ -1,30 +1,28 @@
-import { useEffect, useRef, useState } from "react";
-import MindElixir, { MindElixirInstance } from "mind-elixir";
+import { MindMap } from "@/features/mindmap/components/maindamp";
+import { useState } from "react";
 
 const App: React.FC = () => {
-  const me = useRef<MindElixirInstance | null>(null);
+  const [fileName, setFileName] = useState('');
+  const ipcRenderer = (window as any).preload.ipcRenderer;
 
-  useEffect(() => {
-    const instance = new MindElixir({
-      el: "#map",
-      direction: MindElixir.LEFT,
-      draggable: true, // default true
-      contextMenu: true, // default true
-      toolBar: true, // default true
-      nodeMenu: true, // default true
-      keypress: true // default true
-    });
-    instance.init(MindElixir.new("new topic"));
-    me.current = instance;
-
-    return () => {
-      me.current = null; // Clean up the reference on component unmount
-    };
-
-  }, []);
+  const handleOpneFile = () => {
+    console.log('ssssssssss');
+  }
 
   return(
-    <div id="map" style={{ height: "500px", width: "100%" }} />
+    <>
+      <h1>Hello world</h1>
+      <button onClick={handleOpneFile}>Open File</button>
+      <a
+        className="App-link"
+        onClick={() => ipcRenderer.send("openExternal", "https://reactjs.org")}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Learn React
+      </a>
+      {/* <MindMap /> */}
+    </>
   );
 };
 
